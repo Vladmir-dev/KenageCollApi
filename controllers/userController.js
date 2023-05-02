@@ -19,7 +19,7 @@ export const updateUser = async (req, res, next) => {
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
-      process.env.PASS_SEC
+      process.env.PASSWORD_SECRET
     ).toString();
   }
   try {
@@ -64,14 +64,15 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
-// getting all user Users
+// getting user
 export const getUser = async (req, res, next) => {
   const { id: _id } = req.params;
   try {
     if (!mongoose.Types.ObjectId.isValid(_id))
       throw createErrors.NotFound("User with this id does not exist");
     const User = await User.findById(_id);
-    res.status(200).json(User);
+    const { password, ...others } = User._doc;
+    res.status(200).json(others);
   } catch (error) {
     next(error);
   }
