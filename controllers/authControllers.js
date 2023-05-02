@@ -60,6 +60,8 @@ export const login = async (req, res, next) => {
 };
 
 export const me = async (req, res, next) => {
+  console.log("me");
+  console.log(req.headers["authorization"].split(" ")[1]);
   const { id: _id } = req.params;
   try {
     if (!mongoose.Types.ObjectId.isValid(_id))
