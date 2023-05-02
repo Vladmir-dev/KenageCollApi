@@ -7,6 +7,9 @@ import createErrors from "http-errors";
 dotenv.config();
 
 import authRoutes from "./routes/authRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
 const app = express();
 app.use(express.json({ extended: true, limit: "30mb" }));
@@ -15,6 +18,10 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/carts", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/checkout", stripeRoute);
 
 app.use(async (req, res, next) => {
   next(createErrors.NotFound("This route does not exist"));

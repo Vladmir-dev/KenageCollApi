@@ -38,7 +38,7 @@ export const deleteCart = async (req, res, next) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(_id))
       throw createErrors.NotFound("Cart with this id does not exist");
-    const newCart = await Cart.findByIdAndDelete(_id);
+    await Cart.findByIdAndDelete(_id);
     res.status(200).json("Cart has been deleted successfully");
   } catch (error) {
     next(error);
