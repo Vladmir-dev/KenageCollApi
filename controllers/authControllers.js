@@ -41,7 +41,7 @@ export const login = async (req, res, next) => {
     if (matchedPassword !== validUser.password)
       throw createErrors.Unauthorized("Incorrect credentials");
 
-    const accessToken = JWT.sign(
+    const token = JWT.sign(
       {
         id: user._id,
         isAdmin: user.isAdmin,
@@ -51,8 +51,8 @@ export const login = async (req, res, next) => {
         expiresIn: "30m",
       }
     );
-    const { password, ...others } = user._doc;
-    res.status(200).json({ ...others, accessToken });
+    // const { password, ...others } = user._doc;
+    res.status(200).json({ token });
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
     next(error);
@@ -60,14 +60,19 @@ export const login = async (req, res, next) => {
 };
 
 export const me = async (req, res, next) => {
-  console.log("me");
-  console.log(req.headers["authorization"].split(" ")[1]);
-  const { id: _id } = req.params;
+  const token = req.headers["authorization"].split(" ")[1];
+  console.log(token);
+
   try {
-    if (!mongoose.Types.ObjectId.isValid(_id))
+    const decoded = JWT.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const { id } = decoded;
+    console.log(id);
+
+    if (!mongoose.Types.ObjectId.isValid(id))
       throw createErrors.NotFound("User does not exist");
-    const oldUser = await User.findOne({ _id: _id });
-    res.status(200).json(oldUser);
+    const oldUser = await User.findOne({ _id: id });
+    const { password, accessToken, ...others } = oldUser._doc;
+    res.status(200).json(...others);
   } catch (error) {
     next(error);
   }

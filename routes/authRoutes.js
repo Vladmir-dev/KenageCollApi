@@ -5,6 +5,6 @@ import { verifyToken } from "../helpers/jwtAccessToken.js";
 const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
-router.get("/me/:id", verifyToken, me);
+router.get("/me", verifyToken, me);
 
 export default router;
